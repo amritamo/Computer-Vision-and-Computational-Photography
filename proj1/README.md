@@ -1,1 +1,1 @@
-
+The goal of this assignment is to take the digitized Prokudin-Gorskii glass plate images and, using image processing techniques, automatically produce a color image with as few visual artifacts as possible. The code can be found in main.py.
