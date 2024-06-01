@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        h4 {
+            text-align: center;
+        }
+
+        body {
+            margin: auto;
+            width: 85%;
+        }
+
+        .row {
+            display: flex;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .column {
+            display: inline-block;
+        }
+
+        figure {
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        table {
+            margin: auto;
+        }
+    </style>
+    <title>Facial Key Point Detection with Neural Networks</title>
+</head>
+
+
+<body>
+    <h1>Facial Key Point Detection with Neural Networks</h1>
+    <br>
+    <br>
+    <br>
+
+    <h2>Part 1: Nose Tip Detection</h2>
+
+    <p>I used <code>torch.utils.data.DataLoader</code> to load and visualize my data. I used an 80/20 training/validation split. In this part, I resized the images to 60 x 80 and adjusted the landmarks accordingly. The landmark points 
+        were given as ratios, so to plot the points we had to multiply the landmark by the height and width of the image. We also had to normalize the images to be between -0.5 and 0.5.
+    </p>
+
+    <div class="row">
+        <div class="column">
+            <img src="ground_truth1.jpg" width=50%>
+            <img src="ground_truth2.jpg" width=50%>
+            <img src="ground_truth3.jpg" width=50%>
+
+            <figcaption>sample images with ground truth landmark</figcaption>
+        </div>
+    </div>
+
+    <p>Create a neural network to predict nose keypoint:
+
+        <p> I then trained a neural network to predict where the nose keypoint should land on images that were given labels. My model has three
+            convolutional layers, each with a kernel size of 5. I followed each convolutional layer with a ReLU and max pooling layer. There were also
+            two fully connnected layers at the end. I used MSE loss function and the Adam optimizer with a learning rate of 0.003.
+        </p> 
+    </p>
+
+    <p>This was my training/validation plot for the given learning rate:</p>
+    <div class="row">
+        <div class="column">
+            <img src="train_valid_mse_p1.jpg" width=50%>
+        </div>
+    </div>
+
+    <p>I modified my learning rate to 0.005 and this was how my training curve changed:</p>
+    <div class="row">
+        <div class="column">
+            <img src="training_plot_p1_lr.jpg" width=50%>
+            <figcaption>Loss Plot with lr = 0.005</figcaption>
+        </div>
+    </div>
+
+
+
+    <p>The smaller learning rate of 0.003 made the loss plateau later, which is beneficial during the training process to minimize overfitting. I ran my model on some 
+        test images and the results are shown below. The red is the ground truth and the blue is my models predicted keypoint. 
+    </p>
+
+    <table>
+        <tr>
+            <td>Successful Examples</td>
+            <td><img src="good_plot1.jpg" width=80%></td>
+            <td><img src="good_plot2.jpg" width=80%></td>
+            <td><img src="good_plot3.jpg" width=80%></td>
+
+        </tr>
+        <tr>
+            <td>Failed Examples</td>
+            <td><img src="bad_plot1.jpg" width=80%></td>
+            <td><img src="bad_plot2.jpg" width=80%></td>
+            <td><img src="bad_plot3.jpg" width=80%></td>
+        </tr>
+    </table>
+
+    <p>The model seemed to train better on front facing images. These were the vast majority of the training images, so this make sense. The network 
+        did not seem to learn how to plot the nose keypoints on faces that were off center.
+    </p>
+
+
+    <br>
+    <br>
+    <br>
+
+
+    <h2>Part 2: Full Facial Key Points Detection</h2>
+    <p>In this section I also used <code>torch.utils.data.DataLoader</code> to load and visualize my data. I used an 80/20 training/validation split.
+        I instead resized the image to 120 x 160. I also had to normalize the images for this part as well. To increase the range of our test images
+        and prevent overfitting, I had to apply augmentations to the images such as flipping over the y-axis, adding random noise, translating the image,
+        and adding rotations. I used the imgaug library to do this. 
+    </p>
+    <p> Samples with ground truth landmarks: </p>
+    
+    <div class="row">
+        <div class="column">
+            <img src="face_gt1.jpg" width=20%>
+            <img src="face_gt2.jpg" width=20%>
+            <img src="face_gt3.jpg" width=20%>
+        </div>
+    </div>
+    <p>Create a neural network to predict 58 face keypoints:
+
+        <p> I then trained a neural network to predict where 58 face keypoints should land on test images that were given labels. My model has five
+            convolutional layers, the first two with a kernel size of 5 and the last 3 with a kernel size of 1. I followed each convolutional layer with a ReLU and max pooling layer. There were also
+            two fully connnected layers at the end, and the final output channel was 68*2 for each x and y coordinate. I used MSE loss function and the Adam optimizer with a learning rate of 0.003.
+        </p> 
+
+        <div class="row">
+            <div class="column">
+                <img src="facenet.jpg" width=100%>
+            </div>
+        </div>
+
+        <p> This was my MSE plot for a learning rate of 0.003. </p> 
+    </p>
+
+
+    <div class="row">
+        <div class="column">
+            <img src="facepts_mse.jpg" width=80%>
+        </div>
+    </div>
+
+    <table>
+        <tr>
+            <td>Successful Examples</td>
+            <td><img src="good_face_pred1.jpg" width=80%></td>
+            <td><img src="good_face_pred2.jpg" width=80%></td>
+        </tr>
+        <tr>
+            <td>Failed Examples</td>
+            <td><img src="fail_face1.jpg" width=80%></td>
+            <td><img src="fail_face2.jpg" width=80%></td>
+        </tr>
+    </table>
+
+    <p>My model did not seem to train the best on images that were not facing forward. </p>
+
+    <p>I also visualized the learned filters of the first layer of my neural network as seen below. </p>
+
+    <tr>
+        <td><img src="conv1_filter0.jpg" width=20%></td>
+        <td><img src="conv1_filter1.jpg" width=20%></td>
+        <td><img src="conv1_filter2.jpg" width=20%></td>
+        <td><img src="conv1_filter3.jpg" width=20%></td>
+    </tr>
+    <tr>
+        <td><img src="conv1_filter4.jpg" width=20%></td>
+        <td><img src="conv1_filter5.jpg" width=20%></td>
+        <td><img src="conv1_filter6.jpg" width=20%></td>
+        <td><img src="conv1_filter7.jpg" width=20%></td>
+    </tr>
+    <tr>
+        <td><img src="conv1_filter8.jpg" width=20%></td>
+        <td><img src="conv1_filter9.jpg" width=20%></td>
+        <td><img src="conv1_filter10.jpg" width=20%></td>
+        <td><img src="conv1_filter11.jpg" width=20%></td>
+    </tr>
+    <tr>
+        <td><img src="conv1_filter12.jpg" width=20%></td>
+        <td><img src="conv1_filter13.jpg" width=20%></td>
+        <td><img src="conv1_filter14.jpg" width=20%></td>
+        <td><img src="conv1_filter15.jpg" width=20%></td>
+    </tr>
+
+
+    <br>
+    <br>
+    <br>
+
+
+    <h2>Part 3: Train With Larger Dataset</h2>
+    <p>In this part, we use a larger face dataset which consisted of 6,666 training images to train a neural network to predict 68 face keypoints. Since the images were
+        not all centered, we were given bounding boxes to crop the image for the training process and then resize the images to a 224x224 square. I also used the imgaug library
+    to do augmentations on the training images to prevent overfitting. We also had to transform the labels accordingly.</p>
+    
+    <p>Create a neural network to predict 68 face keypoints:
+
+        <p> I then trained a neural network to predict where 68 face keypoints should land on test images that were given labels. I based my model off of ResNet-18 and only modified the first
+            convolutional layer's input channels to 1, with a kernel size of 7, and stride of 2 and the last fully convolutional layer has 68*2 = 136 output channels. All intermediate
+            layers of ResNet-18 were kept the same. 
+
+             I used MSE loss function and the Adam optimizer with a learning rate of 0.0001.
+        </p> 
+
+        <div class="row">
+            <div class="column">
+                <img src="mse_pt3.jpg" width=100%>
+            </div>
+        </div>
+    </p>
+
+
+    <p>This is how my model predicted the keypoints on some of the test images: </p>
+
+
+    <div class="row">
+        <div class="column">
+            <img src="test_pred1.jpg" width=30%>
+            <img src="test_pred2.jpg" width=30%>
+            <img src="test_pred3.jpg" width=30%>
+        </div>
+    </div>
+
+    </p>
+
+    <p>This is how my model predicted the keypoints on some of my custom images: </p>
+
+
+    <div class="row">
+        <div class="column">
+            <img src="custom1.jpg" width=15%>
+            <img src="custom2.jpg" width=30%>
+            <img src="custom3.jpg" width=30%>
+        </div>
+    </div>
+
+    </p>
+
+    <h2>Part 4: Pixelwise Classification</h2>
+
+    <p>In this part we turned the problem of predicting a keypoint location to the problem of predicting the likelihood of each pixel in the image
+        being a keypoint. I did this my creating a custom dataset that outputed images and the labels as 68 images with a gaussian kernel placed
+        at the keypoint. The 2-D Gaussian kernel I used had a kernel size of 17 and sigma of 3. Below is an example of the kernel I used and the accumulated heatmap.
+    </thead></thead></p>
+    <div class="row">
+        <div class="column">
+            <img src="kernel.jpg" width=50%>
+            <img src="heatmap.jpg" width=50%>
+            <img src="heatmap2.jpg" width=50%>
+
+        </div>
+    </div>
+
+    <p>I used the UNET model to base my model architecture after. The only thing I changed was the input channel number of the first convolutional layer
+        to 1 and the last layer's output channels to 68 for the 68 heatmaps. </p>
+
+    <div class="row">
+        <div class="column">
+            <img src="p4mod1.jpg" width=50%>
+            <img src="p4mod2.jpg" width=50%>
+            <img src="p4mod31.jpg" width=50%>
+        </div>
+    </div>
+
+    <p> I trained my model for 15 epoch, which seemed to be the max I could do without my RAM maxing out and causing the kernel to crash.
+        <div class="row">
+            <div class="column">
+                <img src="p4plot.jpg" width=100%>
+            </div>
+        </div>
+
+    
+    <br>
+    <br>
+    <br>
+
+    <h2> Part 5: Kaggle
+    </h2>
+
+    <p>Part 3 had my best model which was what I used for Kaggle. I got a Kaggle score of 11.87454 under my name.</p>
+
+
+
+</body>
+
+</html>
