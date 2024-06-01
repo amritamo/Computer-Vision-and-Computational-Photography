@@ -1,0 +1,496 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1500px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 194 Project 2</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 194-26: Project 2- Fun with Filters and Frequencies</h1>
+<h2 align="middle">Amrita Moturi, SID: 3035772596</h2>
+
+    <div>
+
+        <h2 align="middle">Overview</h2>
+        <p>
+            In this project, I explored manipulating different images through their frequencies and adding filters. I first tested how we can implement the finite difference operators and testing different thresholds for edge detection. We applied the Gaussian blurring filter for various different use cases including finding edge images, image sharpening, producing high and low frequency images, as well as multiresolution blending. 
+        </p>
+
+        <h2 align="middle">Part I: Fun with Filters</h2>
+
+        <h3 align="middle">Part 1.1: Finite Difference Operator</h3>
+        <p>
+            The first goal of this section was to utilize the finite difference operators, Dx = [1, -1] and Dy = [[1], [-1]] to find the partial derivatives of the cameraman image w.r.t. Dx, which would highlight the vertical edges and w.r.t. Dy, which highlights the horizontal edges. We used the square root of the sum of the partial derivatives to find the gradient magnitude, which accounted for both vertical and horizontal edges to provide a rough outline of the image. In order to minimize noise in this image, we added a threshold to only include pixels above a certain value to be white, and all others black. 
+        </p>
+       
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="cameraman.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Original Image</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_dx.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Convolve with Dx</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_dy.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Convolve with Dy</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_grad_mag.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Gradient Image</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_edge_image.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Edge Image (Threshold: 55)</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <h3 align="middle">Part 1.2: Derivative of Gaussian Filter</h3>
+
+        <p align="middle">Gaussian Filter: kernel size = 11, sigma = 3</p>
+
+        
+        <p>
+            Method 1: Another method to minimize noise is by applying a Gaussian filter to blur the image and minimize high frequencies that contribute to noise. We repeated the same process above but on a blurred image, and improved our edge image result by limiting the noise.
+        </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="cameraman_blur.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Gaussian Blurred Image</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_blur_dx.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Convolve with Dx</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_blur_dy.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Convolve with Dy</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_blur_grad_mag.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Gradient Image</figcaption>
+                    </td>
+                    <td>
+                        <img src="cameraman_blur_edge_image.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Edge Image (Threshold: 7)</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+   
+        <p>
+            Method 2: An alternative is to just convolve the Gaussian filter with both the Dx and Dy kernels and then convolve the cameraman with these new filters. This is possible because convolution is an associative function. 
+        </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="gauss_kernel_dx.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Gaussian convolved w/ Dx</figcaption>
+                    </td>
+                    <td>
+                        <img src="gauss_kernel_dy.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Gaussian convolved w/ Dy</figcaption>
+                    </td>
+                    <td>
+                        <img src="single_conv_dx.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Image convolved w/ dG/dx</figcaption>
+                    </td>
+                    <td>
+                        <img src="single_conv_dy.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Image convolved w/ dG/dy</figcaption>
+                    </td>
+                    <td>
+                        <img src="single_conv_gradient_magnitude.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Gradient Image</figcaption>
+                    </td>
+                    <td>
+                        <img src="single_conv_edge_image.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Edge Image (Threshold: 7)</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <h2 align="middle">Part 2: Fun with Frequencies!</h2>
+
+        <h3 align="middle">Part 2.1: Image "Sharpening"</h3>
+        <p>
+            In this section, I used the unsharp masking technique which works by amplifying an image’s high frequency by a certain alpha value. First, we apply a Gaussian filter to blur the image and get only the low frequencies of the image. We can then subtract the low frequency image that we just obtained from the original image to extract only the high frequencies. By multiplying the high frequencies by a constant and adding this back to the original image, we can emphasize the detailed high frequencies and create the effect that the image is sharper. 
+        </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="taj.jpg" align="middle" width="250px" />
+                        <figcaption align="middle">Original Image</figcaption>
+                    </td>
+                    <td>
+                        <img src="sharpen_taj.jpg" align="middle" width="250px" />
+                        <figcaption align="middle">Sharpened w/ alpha = 2</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p>
+            I tested the filter on some other pieces of art. I had to keep the alpha fairly low to prevent too sharp of contrasts.         </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="monabean.jpg" align="middle" width="300px" />
+                        <figcaption align="middle"> monabean.jpg </figcaption>
+
+                    </td>
+                    <td>
+                        <img src="sharpened_monabean.jpg" align="middle" width="300px" />
+                        <figcaption align="middle"> Sharpened w/ alpha = 2</figcaption>
+                    </td>
+                
+                </tr>
+                <tr>
+                    <td>
+                        <img src="beanpop.jpg" align="middle" width="300px" />
+                        <figcaption align="middle"> beanpop.jpg </figcaption>
+
+                    </td>
+                    <td>
+                        <img src="sharpened_beanpop.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Sharpened w/ alpha = 2</figcaption>
+                    </td>
+                
+                </tr>
+            </table>
+        </div>
+
+        <p>
+            I tried blurring an already high resolution image and seeing if it was possible to achieve the same level of sharpness by applying the unsharp masking filter. As you can see, the Gaussian blur removed the high frequencies and so it resulted in an image that included less of the subtle details. It is interesting to note that I had to use a larger kernel and sigma to blur the tiger since it started off as high resolution than the other images I tried sharpening. 
+        </p>
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="tiger.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">High resolution tiger.jpg</figcaption>
+                    </td>
+                    <td>
+                        <img src="blur_tiger.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Blurred w/ sigma = 5</figcaption>
+                    </td>
+                    <td>
+                        <img src="tiger_sharpened_after_blur.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Sharpened w/ alpha = 5</figcaption>
+                    </td>
+                </tr>
+        
+            </table>
+        </div>
+
+        <h3 align="middle">Part 2.2: Hybrid Images</h3>
+
+        <p>
+            We can also make use of high and low frequencies of images by creating hybrid images. This involves combining high frequencies of one image that we only want to be able to see close-up and low frequencies of another image that our eyes will be able to perceive from a distance. First, we had to align the images, and then take the average of the images’ high and low frequencies to merge them together. 
+        </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="DerekPicture.jpg" align="middle" width="250px" />
+                        <figcaption align="middle">Original DerekPicture.jpg</figcaption>
+                    </td>
+                    <td>
+                        <img src="nutmeg.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Original nutmeg.jpg</figcaption>
+                    </td>
+                    <td>
+                        <img src="align_derek_nutmeg.jpg" align="middle" width="250px" />
+                        <figcaption align="middle">Hybrid Image</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="gw.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Original gw.jpg</figcaption>
+                    </td>
+                    <td>
+                        <img src="bean.jpg" align="middle" width="250px" />
+                        <figcaption align="middle">Original bean.jpg</figcaption>
+                    </td>
+                    <td>
+                        <img src="low_freq_gw.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Low Frequencies</figcaption>
+                    </td>
+                    <td>
+                        <img src="high_freq_bean.jpg" align="middle" width="250px" />
+                        <figcaption align="middle">High Frequencies</figcaption>
+                    </td>
+                    <td>
+                        <img src="align_bean_gw.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Hybrid Image</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p>  We can visualize the frequencies of each image, which we can use Fourier transforms to find. As we can see, the hybrid image is visually a combination of the FFT graphs of the high and low frequency images.  </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="gw_fft.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">gw.jpg FFT</figcaption>
+                    </td>
+                    <td>
+                        <img src="bean_fft.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">bean.jpg FFT</figcaption>
+                    </td>
+                    <td>
+                        <img src="low_freq_gw_fft.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Low Frequency FFT</figcaption>
+                    </td>
+                    <td>
+                        <img src="high_freq_bean_fft.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">High Frequency FFT</figcaption>
+                    </td>
+                    <td>
+                        <img src="hybrid_fft.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Hybrid Image FFT</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+        <p>
+            I also had some failures when creating the hybrid images. This was due to the fact that although we aligned the images such that the eyes matched up, the size of the faces were still very different which made it so that the outline of the high frequency face was still visible from far away, minimizing the hybrid effect.
+        </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="oski.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">oski.jpg</figcaption>
+                    </td>
+                    <td>
+                        <img src="saw2.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">saw.jpg</figcaption>
+                    </td>
+                    <td>
+                        <img src="failed_align.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Failed Hybrid Image</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+        <h3 align="middle">Part 2.3: Gaussian and Laplacian Stacks</h3>
+        <p>
+            The next goal of the project was to blend two images smoothly such that no visible seam was apparent. In order to do this, we had to implement Gaussian and Laplacian stacks for each image. The Gaussian stack was the set of the blurred image with a sigma value that doubled at each layer of the 5-layer stack. The Laplacian stack was the set of the image’s band pass frequencies since we subtracted each level of the Gaussian stack from the image that was below it in the stack. That is, we subtracted the i+1th level from the ith level in the Gaussian to create the Laplacian. The last level of the Laplacian stack was just the last level of the Gaussian. We then created a binary mask and created in Gaussian stack to apply to the apple and orange at each corresponding level of the stack. This helped create a seamless image. 
+        </p>
+        <p>
+            We had to add each level of the combined Laplacian to get our final image.
+        </p>
+        <p>
+            We used the formula LS = GR*(LA) + (1 - GR)*LB to create the blended image at each level, where LS is the combined laplacian, GR is the mask for image A (LA), 1-GR represents the flipped mask to mask out image A, which is multiplied by image B(LB).
+        </p>
+        
+
+        <p align="middle">Gaussian Filter (kernel size = 6, sigma = 1, 2, 4, 8, 16)</p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="masked_apple0.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Apple Layer 0</figcaption>
+                    </td>
+                    <td>
+                        <img src="masked_orange0.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Orange Layer 0</figcaption>
+                    </td>
+                    <td>
+                        <img src="comb_orapple1.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Combined Layer 0</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="masked_apple1.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Apple Layer 1</figcaption>
+                    </td>
+                    <td>
+                        <img src="masked_orange1.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Orange Layer 1</figcaption>
+                    </td>
+                    <td>
+                        <img src="comb_orapple2.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Combined Layer 1</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="masked_apple2.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Apple Layer 2</figcaption>
+                    </td>
+                    <td>
+                        <img src="masked_orange2.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Orange Layer 2</figcaption>
+                    </td>
+                    <td>
+                        <img src="comb_orapple3.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Combined Layer 2</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="masked_apple3.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Apple Layer 3</figcaption>
+                    </td>
+                    <td>
+                        <img src="masked_orange3.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Orange Layer 3</figcaption>
+                    </td>
+                    <td>
+                        <img src="comb_orapple3.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Combined Layer 3</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="masked_apple4.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Apple Layer 4</figcaption>
+                    </td>
+                    <td>
+                        <img src="masked_orange4.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Orange Layer 4</figcaption>
+                    </td>
+                    <td>
+                        <img src="comb_orapple5.jpg" align="middle" width="200px" />
+                        <figcaption align="middle">Combined Layer 4</figcaption>
+                    </td>
+                </tr>
+    
+            </table>
+        </div>
+
+        
+
+
+        <h3 align="middle">Part 2.4: Multiresolution Blending</h3>
+
+        <p>Below is the binary mask I used and the blended oraple result.</p>
+
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="binary_mask.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Binary Mask (level 0)</figcaption>
+                    </td>
+                    <td>
+                        <img src="binary_mask_blur.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Binary Mask (level 1)</figcaption>
+                    </td>
+                    <td>
+                        <img src="final_orapple.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">Final Oraple</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p>I applied the same vertical mask on the images below to recreate the meme circulating due to Queen Elizabeth's recent passing ;(</p>
+
+    
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="xxx.jpg" align="middle" width="300px" />
+                    </td>
+                    <td>
+                        <img src="queen.jpg" align="middle" width="300px" />
+                    </td>
+                    <td>
+                        <img src="comb_xxx_queen.jpg" align="middle" width="300px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <p>
+            I also implemented an irregular mask to bring the teletubbies to Berkeley. To create my Gaussian stack I used a kernel size of 5 and sigma of 0.25.
+        </p>
+
+        <div align="middle">
+            <table style="width=100%">
+                <tr>
+                    <td>
+                        <img src="cropped_teletubby.jpg" align="middle" width="350px" />
+                        <figcaption align="middle">"teletubby.jpg"</figcaption>
+                    </td>
+                    <td>
+                        <img src="berk.jpg" align="middle" width="300px" />
+                        <figcaption align="middle">"berk.jpg"</figcaption>
+                    </td>
+                    <td>
+                        <img src="cropped_teletubby_mask.jpg" align="middle" width="350px" />
+                        <figcaption align="middle">irregular mask</figcaption>
+                    </td>
+                    <td>
+                        <img src="comb_teletubby_berk.jpg" align="middle" width="350px" />
+                        <figcaption align="middle">Combined Image</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <h3 align="middle">Bells and Whistles</h3>
+
+
+        <p>
+            I was able to achieve the Multiresolution blending with color by applying the process to each layer of the RGB filters and then combining the layers.
+        </p>
+        <p>
+            The part I found most interesting about the project was the section when we made the hybrid images because I was able to see how human perception played a big impact on whether the images turned out good or not. I could not really tell which combinations of images would make for good hybrid images until I actually combined them. I did however notice that images where I extracted the high frequencies that had sharp contrasting edges made it harder to create the effect of being able to only see high frequencies from close.
+        </p>
+
+
+    </div></body>
+</html>
