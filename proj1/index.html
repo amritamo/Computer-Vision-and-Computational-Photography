@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>Title</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">Project 1: Images of the Russian Empire</h1>
+<h1 align="middle">COMPSCI 194-26</h1>
+<h2 align="middle">Amrita Moturi | amoturi@berkeley.edu</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>This project involved colorizing images that were taken by the photographer Sergei Mikhailovich Prokudin-Gorskii in the early 1900s. At the time Prokudin-Gorskii was only able to capture the scenes in black and white, using a red, green, and blue filter, one at a time on glass plate negatives. Using alignment techniques, we are able to stack these R,G,B filtered images on top of each other to bring color to it. 
+    <br>
+    <br>
+</p>
+
+<h2 align="middle">Approach</h2>
+
+<h3 align="left">Base Alignment</h3>
+
+<p>At first, I wanted to see what the image would look like after separating the color channels and stacking them with no alignment optimization technique. The image on the left below is the scene taken in R, G, B filters respectively (starting image). We can then separate this image into the 3 channels by cropping the image into thirds. Clearly, it was not sufficient to simply stack these on each other. Due to the fact that the photographer took the three R, G, B filtered images at three different times, there was some variance in the conditions of how the image was taken.</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="cathedral.jpg" align="middle" width="200px"/>
+                <img src="out_fname.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Simply stacking the photographs resulted in a blurry scene. We need some other techniques that will allow us to shift the images such that they are near perfectly aligned. </figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+<h2 align="left">Color Channel Alignment Optimization </h2>
+
+<h3 align="left">Sum of Squared Distances (SSD) </h3>
+<p> For the smaller JPEG images, we can do an exhaustive search over possible offsets, searching for which results in the lowest SSD distance between the pixel values. I chose perform the image matching over a 15 by 15 pixel window, which searched horizontally and vertically across the image. I began at [0, 0] in the red and green filtered image, and matched them to the blue filtered image. 
+    </p>
+
+<h3 align="left">Normalized Cross Correlation (NCC) </h3>
+<p> Another metric that we can use to optimize the image alignment is normalized cross-correlation (NCC), in which we wanted to maximize the dot product between the two normalized image vectors. We want to maximize this value since it is an indicator of how similar the pixel values were in that offset window.
+    </p>
+
+<p> Using SSD optimization, this was the resulting image. However, I noticed that there was a strange border after alignment due to the way the image was originally taken, so I implemented a cropping function that took the inner 80% of the image. Since this reduced the noise that was around the borders of the images, this helped the image matching algorithms. The two exhaustive search methods outputted the same offset values when I ran them on the JPEG images.</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="aligned_cathedral.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [3, 12] | Green offset [-1, 1] </figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="cathedral_ssd.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [3, 12] | Green offset [2, 5] for SSD and NCC</figcaption>
+            </td>
+            <td>
+                <img src="monastery_ncc.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [2, 3] | Green offset [2, -3] for SSD and NCC</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="tobolsk_ncc.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [3, 6] | Green offset [3, 3] for SSD and NCC</figcaption>
+            </td>
+            <td>
+                <img src="lilacs_ssd.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [-3, 9] | Green offset [-1, 5] for SSD and NCC </figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<h3 align="left">Image Pyramid </h3>
+<p> For the larger TIF images, using the exhaustive search method was very slow, and I was not even able to get an output. In this case, I implemented an image pyramid which essentially downscales the image in terms of size and resolution	 by half at each level of the pyramid and performs the search using NCC or SSD on this smaller image, working its way back down to the original size of the image. I used a base case of 400 pixels as the x dimension value because I noticed that many of the .jpg files met this threshold value. I tested other thresholds, but 400 seemed to be the optimal one in this case.  
+    </p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="church_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [-4, 58] | Green offset [4, 25]</figcaption>
+            </td>
+            <td>
+                <img src="emir_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [55, 103] | Green offset [24,49]</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="harvesters_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [13, 123] | Green offset  [16, 59]</figcaption>
+            </td>
+            <td>
+                <img src="icon_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [23, 89] | Green offset [17, 41] </figcaption>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="lady_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [11, 112] | Green offset [9, 51]</figcaption>
+            </td>
+            <td>
+                <img src="melons_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [13, 178] | Green offset [10,81]</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="onion_church_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [36, 108] | Green offset [26, 51]</figcaption>
+            </td>
+            <td>
+                <img src="sculpture_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [-27, 140] | Green offset [-11, 33]</figcaption>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="self_portrait_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [37, 176] | Green offset [29, 78]</figcaption>
+            </td>
+            <td>
+                <img src="three_generations_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [11, 112] | Green offset [14, 53]</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="train_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [32, 87] | Green offset [5, 42]</figcaption>
+            </td>
+            <td>
+                <img src="lodges_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [4, 98] | Green offset [3, 34] </figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<h2 align="middle">Bells and Whistles</h2>
+
+<h3 align="left">Auto Contrast</h3>
+
+<p>For the auto-contrast function, I implemented Histogram Equalization, which we learned in class. This works by distributing pixel intensities to follow a uniform distribution as closely as possible. In order to do this, I converted the RGB colorspace to the HSV color space and then normalized only the V channel because this represented color pixel intensities. I converted this back to the RGB space afterwards (BGR in OpenCV). </p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="lady_ip.jpg" align="middle" width="400px"/>
+            </td>
+            <td>
+                <img src="lady_hist_eq.jpg" align="middle" width="400px"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="harvesters_ip.jpg" align="middle" width="400px"/>
+            </td>
+            <td>
+                <img src="harvesters_hist_eq.jpg" align="middle" width="400px"/>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="yurt_ip.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [48, 130] | Green offset [31, 57]</figcaption>
+            </td>
+            <td>
+                <img src="yurt_hist_eq.jpg" align="middle" width="400px"/>
+            </td>
+        </tr>
+    </table>
+</div>
+<h3 align="left">Auto White Balancing</h3>
+
+<p>For the auto white balancing feature, I converted the RGB to the grayscale colorspace, and scaled up these values to be in the [0, 255] range since grayscale values only range from [0,1]. The next task was to find the brightest pixel value, so we could scale up all the values in the original RGB image such that the brightest pixel was 255. For the reference image I used, this did not have much a difference since the original pixel value was 254, so the scaling factor was very close to 1. </p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="harvesters_ip.jpg" align="middle" width="400px"/>
+            </td>
+            <td>
+                <img src="harvesters_ip_whitebalance.jpg" align="middle" width="400px"/>
+            </td>
+        </tr>
+        <br>
+        <p>Instead of pure white, I shifted the brightest color to a gray value, and saw better results, as shown in the image with the boy and yurt.</p>
+        <tr>
+            <td>
+                <img src="kid_ssd.jpg" align="middle" width="400px"/>
+                <figcaption align="middle">Red offset [-1, 10] | Green offset [-1, 4]</figcaption>
+            </td>
+            <td>
+                <img src="kid_whitebalance.jpg" align="middle" width="400px"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="yurt_ip.jpg" align="middle" width="400px"/>
+            </td>
+            <td>
+                <img src="yurt_whitebalance.jpg" align="middle" width="400px"/>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
