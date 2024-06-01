@@ -1,0 +1,210 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 194-26 Project 3</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+<body>
+    <h1 align="middle">CS 194-26 Project 3: Face Morphing</h1>
+    <h1 align="middle">Amrita Moturi, SID: 3035772595</h1>
+
+    <h2 align="middle">Overview</h2>
+    <p>This project involved applying affine transformations to morph faces from one to another, which included both the shape and appearance of other faces. </p>
+
+    <h2 align="middle">Part 1: Definining Correspondences</h2>
+    <p>
+        In this segment, I selected key features in both of the faces to begin the morphing process. A full morph includes morphing both the shape and cross-dissolving the color. In order to compute the morphed shape from one image to another, I wrote a function to select key points in the same order on both faces. I selected 71 correspondence points including the corners to include the background in the morphed image. I then computed the mean placement of all the features to use for the midway face. 
+    </p>
+
+    <div align="middle">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <img src="hannahpts.jpeg" align="middle" width="600px" />
+                    <figcaption align="middle">Face 1</figcaption>
+                </td>
+                <td>
+                    <img src="jennypts.jpeg" align="middle" width="600px" />
+                    <figcaption align="middle">Face 2</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div align="middle">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <img src="hannah_triang.jpg" align="middle" width="300px" />
+                    <figcaption align="middle">Face 1 Triangulation</figcaption>
+                </td>
+                <td>
+                    <img src="jenny_triang.jpg" align="middle" width="300px" />
+                    <figcaption align="middle">Face 2 Triangulation</figcaption>
+                </td>
+                <td>
+                    <img src="midface_triangulation.jpg" align="middle" width="300px" />
+                    <figcaption align="middle">Mid-face Triangulation</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <p>
+        In order to fill in the colors of the midway face, I used Delaunay triangulations of the mean of the key points. Inverse warping via the affine transformation of each pixel in the midway face image to each pixel in the original two images helps with the cross-dissolving part of morphing.
+    </p>
+
+    <h3 align="middle">Part 2: Computing the "Mid-way Face"</h3>
+
+    <div align="middle">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <img src="han1.jpg" align="middle" width="400px" />
+                    <figcaption align="middle">Face 1</figcaption>
+                </td>
+                <td>
+                    <img src="jen.jpg" align="middle" width="400px" />
+                    <figcaption align="middle">Face 2</figcaption>
+                </td>
+                <td>
+                    <img src="midway_face.jpg" align="middle" width="400px" />
+                    <figcaption align="middle">Morphed mid-way face!</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 align="middle">Part 3: The Morph Sequence</h2>
+
+    <p>
+        In order to get a full morphing sequence, I essentially repeated the process for the midway face, but instead of equally weighting the face shape of both the images, I weighted them based on a warp fraction that was computed based on which frame in the sequence we were on. I used a varying dissolve fraction as well, in order to morph the colors of each face gradually.
+    </p>
+    <img src="ezgif.com-gif-maker.gif" align="middle" width="500px" />
+
+    <h2 align="middle">Part 4: The "Mean face" of a population</h2>
+
+    <p>
+        In this section, I used the FEI database of annotated Brazilian faces to compute the average shape of the population. I used 35 faces which each has 46 pre-aligned datapoints, in which I added 4 more to include the corners of the images.
+    </p>
+
+    <div align="middle">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <img src="7a.jpg" align="middle" width="300px" />
+                </td>
+                <td>
+                    <img src="8a.jpg" align="middle" width="300px" />
+                </td>
+                <td>
+                    <img src="11a.jpg" align="middle" width="300px" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <p>
+        I warped each face in the subset to the geometry of the mean face.
+    </p>
+
+    <div align="middle">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <img src="warped7a.jpg" align="middle" width="300px" />
+                </td>
+                <td>
+                    <img src="warped8a.jpg" align="middle" width="300px" />
+                </td>
+                <td>
+                    <img src="warped11a.jpg" align="middle" width="300px" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <p>
+        Finally, I averaged all of the warped faces to get the mean geometry of all the faces.
+    </p>
+
+    <img src="mean_face.jpg" align="middle" width="400px" />
+
+    <p>
+        I warped Hannah's face to the mean face geometry and warped the mean face to Hannah's geometry.
+    </p>
+
+    <div align="middle">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <img src="han_to_mean.jpg" align="middle" width="300px" />
+                    <figcaption align="middle">Hannah warped to mean face</figcaption>
+                </td>
+                <td>
+                    <img src="mean_to_han.jpg" align="middle" width="300px" />
+                    <figcaption align="middle">Mean face warped to Hannah</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h3 align="middle">Part 5: Caricatures- Extrapolating from the Mean</h3>
+
+    <p>
+        To produce caricatures, I subtracted the mean face from Hannah's face and amplified her unique features by an alpha value. Positive alpha values make her features more pronounced, while negative alpha values make her face shape closer to the mean.
+    </p>
+
+    <div align="middle">
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <img src="han_caricature1.jpg" align="middle" width="300px" />
+                    <figcaption align="middle">Alpha = -1.2</figcaption>
+                </td>
+                <td>
+                    <img src="han_caricature2.jpg" align="middle" width="300px" />
+                    <figcaption align="middle">Alpha = 0.5</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 align="middle">Bells and Whistles</h2>
+
+    <p>
+        I played around with morphing Hannah to the geometry, appearance, and a combination of both features of the average Mexican man that I found online. 
+    </p>
+    <table style="width:100%">
+        <tr>
+            <td>
+                <img src="han_man_shape.gif" align="middle" width="400px" />
+                <figcaption align="middle">Hannah morphed to geometry only</figcaption>
+            </td>
+            <td>
+                <img src="han_man_appearance.gif" align="middle" width="400px" />
+                <figcaption align="middle">Hannah morphed to appearance only</figcaption>
+            </td>
+            <td>
+                <img src="han_to_man.gif" align="middle" width="400px" />
+                <figcaption align="middle">Hannah morphed to average Mexican man</figcaption>
+            </td>
+        </tr>
+    </table>
+    
+
+</body>
+</html>
