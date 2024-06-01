@@ -1,1 +1,2 @@
-The goal of this assignment is to take the digitized Prokudin-Gorskii glass plate images and, using image processing techniques, automatically produce a color image with as few visual artifacts as possible. The code can be found in main.py.
+The goal of this assignment is to take the digitized Prokudin-Gorskii glass plate images and, using image processing techniques, automatically produce a color image with as few visual artifacts as possible. main.py contains the naive Sum of Squared Distances (SSD) and Normalized Creoss Correlation (NCC) image alignment optimization methods, as well as the image pyramid function. It also contains the auto-contrast
+feature and auto white balance. 
