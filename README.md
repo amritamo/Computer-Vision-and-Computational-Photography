@@ -1,1 +1,2 @@
 # Computer Vision and Computational Photography
+I took this course with Alexei Efros and Anjoo Kanazawa in Fall 2022. Covered image processing techniques, image analysis and visual understanding (computer vision), and image synthesis (computational photography). Implemented key algorithms ranging from classical (e.g. Gaussian and Laplacian Pyramids) to contemporary (e.g. ConvNets, GANs) to build practical systems.
