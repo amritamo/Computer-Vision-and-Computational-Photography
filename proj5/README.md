@@ -1,1 +1,1 @@
-In this project, I predicted facial keypoint by optimizing the ResNet-28 architecture for full facial keypoint detection of ibug face dataset. Implemented U-Net architecture for pixelwise classification, generating pixel-aligned heatmaps to predict facial keypoints.
+In this project, I optimized the ResNet-28 architecture for full facial keypoint detection of the ibug face dataset. Implemented U-Net architecture for pixelwise classification, generating pixel-aligned heatmaps to predict keypoint positions.
